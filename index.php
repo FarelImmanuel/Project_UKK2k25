@@ -1,4 +1,5 @@
 <?php
+// Koneksi ke database
 $koneksi = mysqli_connect('localhost', 'root', '', 'aplikasi_todolist');
 
 // Tambah Task
@@ -7,6 +8,7 @@ if (isset($_POST['add_task'])) {
     $priority = $_POST['priority'];
     $due_date = $_POST['due_date'];
 
+    // Validasi input tidak boleh kosong
     if (!empty($task) && !empty($priority) && !empty($due_date)) {
         $query = "INSERT INTO tasks (task, priority, due_date, status) VALUES ('$task', '$priority', '$due_date', '0')";
         mysqli_query($koneksi, $query);
@@ -16,14 +18,14 @@ if (isset($_POST['add_task'])) {
     }
 }
 
-// Menandai task Selesai
+// Menandai task sebagai selesai
 if (isset($_GET['complete'])) {
     $id = $_GET['complete'];
     mysqli_query($koneksi, "UPDATE tasks SET status=1 WHERE id=$id");
     echo "<script>alert('Data Berhasil diperbaharui'); window.location='index.php';</script>";
 }
 
-// Menghapus task
+// Menghapus task dari database
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
     mysqli_query($koneksi, "DELETE FROM tasks WHERE id=$id");
@@ -42,11 +44,12 @@ if (isset($_POST['edit_task'])) {
     echo "<script>alert('Data Berhasil Diperbarui!'); window.location='index.php';</script>";
 }
 
+// Koneksi (Mengambil Data ke Database)
 $result = mysqli_query($koneksi, "SELECT * FROM tasks ORDER BY status ASC, priority DESC, due_date ASC");
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,6 +60,7 @@ $result = mysqli_query($koneksi, "SELECT * FROM tasks ORDER BY status ASC, prior
     <div class="container mt-2">
         <h2 class="text-center">Aplikasi To-Do-List</h2>
 
+        <!-- Form Edit Task -->
         <?php
         if (isset($_GET['edit'])) {
             $id = $_GET['edit'];
@@ -78,6 +82,8 @@ $result = mysqli_query($koneksi, "SELECT * FROM tasks ORDER BY status ASC, prior
             <button class="btn btn-warning w-100 mt-2" name="edit_task">Perbarui</button>
         </form>
         <?php } else { ?>
+
+        <!-- Form Tambah Task Baru -->
         <form method="POST" class="border rounded bg-light p-2">
             <label class="form-label">Nama Tugas</label>
             <input type="text" name="task" class="form-control" placeholder="Masukkan Tugas Baru" required>
@@ -96,10 +102,11 @@ $result = mysqli_query($koneksi, "SELECT * FROM tasks ORDER BY status ASC, prior
 
         <hr>
 
+        <!-- Tabel Daftar Tampilan Task -->
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>NO</th>
+                    <th>No</th>
                     <th>Task</th>
                     <th>Prioritas</th>
                     <th>Tanggal & Waktu</th>
@@ -134,5 +141,39 @@ $result = mysqli_query($koneksi, "SELECT * FROM tasks ORDER BY status ASC, prior
             </tbody>
         </table>
     </div>
+
+    <!-- Tambahkan Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-database.js"></script>
+
+<script>
+  // Konfigurasi Firebase (Ganti dengan kode proyekmu)
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    databaseURL: "YOUR_DATABASE_URL",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+  
+  // Mendaftarkan ke Service Worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log("Service Worker Registered!"))
+      .catch(err => console.log("Service Worker Failed!", err));
+  }
+  
+  //Service Worker
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log("Service Worker Registered!"))
+      .catch(err => console.log("Service Worker Failed!", err));
+  }
+</script>
+</script>
+
 </body>
 </html>
